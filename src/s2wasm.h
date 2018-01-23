@@ -520,6 +520,7 @@ class S2WasmBuilder {
         }
       }
       else if (match("globl")) parseGlobl();
+      else if (match("hidden")) parseHidden();
       else if (match("functype")) parseFuncType();
       else skipObjectAlias(true);
     }
@@ -589,6 +590,7 @@ class S2WasmBuilder {
       if (parseVersionMin());
       else if (match("file")) parseFile();
       else if (match("globl")) parseGlobl();
+      else if (match("hidden")) parseHidden();
       else if (match("type")) parseType();
       else {
         s--;
@@ -612,6 +614,11 @@ class S2WasmBuilder {
 
   void parseGlobl() {
     linkerObj->addGlobal(getStr());
+    skipWhitespace();
+  }
+
+  void parseHidden() {
+    linkerObj->addHidden(getStr());
     skipWhitespace();
   }
 

@@ -147,8 +147,12 @@ void Linker::layout() {
     ensureObjectImport(obj);
   }
 
-  // XXX For now, export all functions marked .globl.
-  for (Name name : out.globls) exportFunction(out.wasm, name, false);
+  // Export all functions marked .globl, that haven't otherwise been marked .hidden
+  for (Name name : out.globls) {
+    if (out.hiddens.find(name) == out.hiddens.end()) {
+      exportFunction(out.wasm, name, false);
+    }
+  }
   for (Name name : out.initializerFunctions) exportFunction(out.wasm, name, true);
 
   // Pad the indirect function table with a dummy function
