@@ -38,6 +38,7 @@ int main(int argc, const char *argv[]) {
   bool generateEmscriptenGlue = false;
   bool allowMemoryGrowth = false;
   bool importMemory = false;
+  bool exportHidden = true;
   std::string startFunction;
   std::vector<std::string> archiveLibraries;
   TrapMode trapMode = TrapMode::Allow;
@@ -107,6 +108,11 @@ int main(int argc, const char *argv[]) {
            [&importMemory](Options *, const std::string &) {
              importMemory = true;
            })
+      .add("--no-export-hidden", "", "Prevent exporting functions with \"hidden\" visibility",
+           Options::Arguments::Zero,
+           [&exportHidden](Options *, const std::string &) {
+             exportHidden = false;
+           })
       .add("--library", "-l", "Add archive library",
            Options::Arguments::N,
            [&archiveLibraries](Options *o, const std::string &argument) {
@@ -154,8 +160,8 @@ int main(int argc, const char *argv[]) {
   if (options.debug) std::cerr << "Global base " << globalBase << '\n';
 
   Linker linker(globalBase, stackAllocation, initialMem, maxMem,
-                importMemory || generateEmscriptenGlue, ignoreUnknownSymbols, startFunction,
-                options.debug);
+                importMemory || generateEmscriptenGlue, exportHidden, ignoreUnknownSymbols,
+                startFunction, options.debug);
 
   S2WasmBuilder mainbuilder(input.c_str(), options.debug);
   linker.linkObject(mainbuilder);

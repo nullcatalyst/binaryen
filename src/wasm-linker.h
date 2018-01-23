@@ -221,7 +221,7 @@ class LinkerObject {
 class Linker {
  public:
   Linker(Address globalBase, Address stackAllocation, Address userInitialMemory,
-         Address userMaxMemory, bool importMemory, bool ignoreUnknownSymbols,
+         Address userMaxMemory, bool importMemory, bool exportHidden, bool ignoreUnknownSymbols,
          Name startFunction, bool debug)
       : ignoreUnknownSymbols(ignoreUnknownSymbols),
         startFunction(startFunction),
@@ -230,6 +230,7 @@ class Linker {
         userInitialMemory(userInitialMemory),
         userMaxMemory(userMaxMemory),
         importMemory(importMemory),
+        exportHidden(exportHidden),
         stackAllocation(stackAllocation),
         debug(debug) {
     if (userMaxMemory && userMaxMemory < userInitialMemory) {
@@ -333,6 +334,8 @@ class Linker {
   //(after linking, this is rounded and set on the wasm object in pages)
   bool importMemory;  // Whether the memory should be imported instead of
                       // defined.
+  bool exportHidden;  // Whether all functions marked `.globl` should be exported,
+                      // or just those that are not also marked `.hidden`.
   Address stackAllocation;
   bool debug;
 

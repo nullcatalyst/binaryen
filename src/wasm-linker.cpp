@@ -148,9 +148,15 @@ void Linker::layout() {
   }
 
   // Export all functions marked .globl, that haven't otherwise been marked .hidden
-  for (Name name : out.globls) {
-    if (out.hiddens.find(name) == out.hiddens.end()) {
+  if (exportHidden) {
+    for (Name name : out.globls) {
       exportFunction(out.wasm, name, false);
+    }
+  } else {
+    for (Name name : out.globls) {
+      if (out.hiddens.find(name) == out.hiddens.end()) {
+        exportFunction(out.wasm, name, false);
+      }
     }
   }
   for (Name name : out.initializerFunctions) exportFunction(out.wasm, name, true);
